@@ -1,0 +1,83 @@
+﻿@model LoginEditModel
+@{
+    Layout = "~/Views/Shared/_AccountMobile.cshtml";
+    ViewBag.Title = "登录";
+}
+<div class="login-div-m text-center animated fadeInDown">
+    <div>
+        <div class="login-logo">
+            <img src="~/Content/img/logo.png" width="50%" />
+        </div>
+        <div class="login-form">
+            @using (Html.BeginForm("Login", "Account", FormMethod.Post, new { id = "loginForm" }))
+            {
+                @*@Html.AntiForgeryToken()*@
+                @Html.Message()
+                <div class="form-group">
+                    <label class="login-title">USERNAME</label>
+                    @Html.TextBoxFor(n => n.UserName, new { placeholder = "Your name...", @class = "form-control" })
+                </div>
+                <div class="form-group">
+                    <label class="login-title">PASSWORD</label>
+                    @Html.TextBoxFor(n => n.Password, new { type = "password", placeholder = "Password...", @class = "form-control" })
+                </div>
+                <div class="form-group text-right">
+                    <label class="login-label">Forgot your password?</label>
+                </div>
+                <div class="form-group">
+                    @*<input type="hidden" name="returnUrl" value="@Request.QueryString["returnUrl"]">*@
+                    @Html.HiddenFor(n => n.ReturnUrl)
+                    <button class="btn btn-sm btn-primary pull-right m-t-n-xs login-button" type="submit">
+                        <strong>Login</strong>
+                    </button>
+                    <label class="login-label">
+                        <input type="checkbox" name="Rememberme" class="i-checks" value="true">Remember me
+                    </label>
+                </div>
+            }
+        </div>
+        <div class="login-version">
+            <p class="text-muted text-center">
+                Version:@ConfigHelper.GetAppSetting("VersionNumber")
+            </p>
+            <p class="text-muted text-center">
+                @{
+                    DateTime releaseDate = DateTime.MinValue;
+                    bool result = DateTime.TryParse(ConfigHelper.GetAppSetting("VersionDate"), out releaseDate);
+                }
+                @if (result)
+                {
+                    @releaseDate.ToString("yyyy-MM-dd HH:mm:ss")
+                }
+            </p>
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script type="text/javascript">
+        $(function () {
+            $(".i-checks").iCheck({ checkboxClass: "iradio_square-green", radioClass: "iradio_square-green", })
+            $('#loginForm input[type="text"], #loginForm input[type="password"]').on('focus', function () {
+                $(this).removeClass('input-error');
+            });
+            $('#loginForm').on('submit', function (e) {
+                var nameval = $("#UserName").val().trim();
+                var pwdval = $("#Password").val().trim();
+                if (nameval == "") {
+                    e.preventDefault();
+                    layer.alert("用户名不能为空", {
+                        icon: 2
+                    });
+                    return false;
+                }
+                if (pwdval == "") {
+                    e.preventDefault();
+                    layer.alert("密码不能为空", {
+                        icon: 2
+                    });
+                    return false;
+                }
+            });
+        });
+    </script>
+}

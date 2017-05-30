@@ -1,0 +1,63 @@
+﻿@model LoginEditModel
+@{
+    Layout = "~/Views/Shared/_Account.cshtml";
+    ViewBag.Title = ViewBag.LoginProvider + "账号关联";
+}
+<div class="row">
+    <div class="col-sm-8 col-sm-offset-2 text">
+        <a href="@Url.Home()"><h1><strong>ZYX's Blog</strong></h1></a>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-6 col-sm-offset-3 form-box">
+        <div class="form-top">
+            <div class="form-top-left">
+                <h3>@(ViewBag.LoginProvider)账号关联</h3>
+                <p>请输入用户名和昵称来完成@(ViewBag.LoginProvider)账号的绑定。</p>
+            </div>
+            <div class="form-top-right thirdloginlogo">
+                <img src="@ViewBag.Avatar" alt="@(ViewBag.LoginProvider)" />
+            </div>
+        </div>
+        <div class="form-bottom">
+            @using (Html.BeginForm("ExternalRegister", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "login-form", role = "form" }))
+            {
+                @Html.AntiForgeryToken()
+                @Html.Message()
+                <div class="form-group">
+                    <label class="sr-only" for="UserName">用户名</label>
+                    @Html.TextBoxFor(n => n.UserName, new { placeholder = "用户名", @class = "form-username form-control" })
+                </div>
+                <div class="form-group">
+                    <label class="sr-only" for="NickName">昵称</label>
+                    @Html.TextBoxFor(n => n.NickName, new { placeholder = "昵称", @class = "form-username form-control" })
+                </div>
+                <input type="hidden" name="returnUrl" value="@Request.QueryString["returnUrl"]">
+                <button type="submit" class="btn">提交</button>
+                <div class="form-group">
+                    <p></p>
+                    <span class="notregister">已有账号？</span>
+                    <a href="@Url.LogIn()">立即登陆</a>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        //$.backstretch("@WebHelper.ResolveUrl("~/Content/img/login.jpg")");
+
+        $('.login-form').on('submit', function (e) {
+            $(this).find('input[type="text"]').each(function () {
+                if ($(this).val() == "") {
+                    e.preventDefault();
+                    $(this).addClass('input-error');
+                }
+                else {
+                    $(this).removeClass('input-error');
+                }
+            });
+        });
+    });
+</script>

@@ -1,0 +1,85 @@
+﻿@model IPagedList<Navigation>
+@{
+    ViewBag.Title = "ManageNavigation";
+    Layout = "~/Views/Shared/_Iframe.cshtml";
+    int schoolId = ViewData.Get<int>("schoolId", 0);
+}
+<section class="content">
+    <div class="row manageuser">
+        <div class="col-xs-12">
+            @using (Html.BeginForm("ManageNavigation", "Admin", FormMethod.Get, new { id = "navigationForm" }))
+            {
+                <div class="box">
+                    <div class="box-header">
+                        @Html.TextBox("searchInputs", "", new { @class = "form-control pull-left", @style = "width:150px;", @placeholder = "导航名称" })<label class="pull-left">&nbsp;&nbsp;&nbsp;</label>
+                        <button class="btn btn-sm btn-primary pull-left" type="submit">查询</button><label class="pull-left">&nbsp;&nbsp;&nbsp;</label>
+                        <h3 class="box-title"><a href="@Url.Action("EditNavigation")" class="btn btn-sm btn-primary" dialog>添加菜单</a></h3>
+                    </div>
+                    <div class="box-body">
+                        <div class="dataTables_wrapper form-inline dt-bootstrap">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <table data-mobile-responsive="true" data-row-style="rowStyle" data-sort-name="id" data-sort-order="asc" data-toolbar="#toolbar" data-striped="true" data-toggle="table" id="tb_Navigation">
+                                        <thead>
+                                            <tr>
+                                                <th data-field="Name" data-sortable="true">导航名称</th>
+                                                <th data-field="Parent" data-sortable="true">父级导航</th>
+                                                <th data-field="RouteName" data-sortable="true">路由名称</th>
+                                                <th data-field="PermissionName" data-sortable="true">权限名称</th>
+                                                <th data-field="IconName" data-sortable="true">图标名称</th>
+                                                <th data-field="DisplayOrder" data-sortable="true">排序序号</th>
+                                                <th data-field="IsEnabled" data-sortable="true">是否启用</th>
+                                                <th data-field="operate" data-sortable="false" data-searchable="false">操作</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var nav in Model)
+                                            {
+
+                                                <tr>
+                                                    <td>@nav.Name</td>
+                                                    <td>@(nav.ParentId == null ? "" : nav.Parent.Name)</td>
+                                                    <td>@nav.RouteName</td>
+                                                    <td>@nav.PermissionName</td>
+                                                    <td>@nav.IconName</td>
+                                                    <td>@nav.DisplayOrder</td>
+                                                    <td>@(nav.IsEnabled ? "是" : "否")</td>
+                                                    <td>
+                                                        <a href="@Url.Action("EditNavigation", new {id = nav.Id})" class="btn btn-xs btn-primary" dialog><i class="fa fa-edit"></i> 编辑</a>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-5">
+                                </div>
+                                <div class="col-sm-7">
+                                    <div class="dataTables_paginate paging_simple_numbers">
+                                        @Html.Pager(Model)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+@section scripts{
+    <script type="text/javascript">
+        function OnSuccessCallBack(data) {
+            layer.closeAll("page");
+            layer.msg(data.Message, { icon: data.Status, time: 1500 }, function () {
+                if (data.Status == 1) {
+                    window.location.reload();
+                }
+            });
+        }
+
+        bootstraptableCardView("tb_Navigation");
+    </script>
+}

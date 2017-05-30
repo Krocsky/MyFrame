@@ -1,0 +1,71 @@
+﻿@model IPagedList<Permission>
+@{
+    ViewBag.Title = "权限管理";
+    Layout = "~/Views/Shared/_Iframe.cshtml";
+}
+<section class="content">
+    <div class="row manageuser">
+        <div class="col-xs-12">
+            <div class="box">
+                <div class="box-header">
+                    <h3 class="box-title"><a href="@Url.EditPermission()" class="btn btn-sm btn-primary" dialog>添加权限</a></h3>
+                </div>
+                <div class="box-body">
+                    <div class="dataTables_wrapper form-inline dt-bootstrap">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <table data-mobile-responsive="true" data-row-style="rowStyle" data-sort-name="id" data-sort-order="asc" data-striped="true" data-toggle="table" id="tb_Permissions">
+                                    <thead>
+                                        <tr>
+                                            @*<th data-field="id" data-sortable="true">ID</th>*@
+                                            <th data-field="name" data-sortable="true">权限名称</th>
+                                            <th data-field="description" data-sortable="true">描述</th>
+                                            @*<th data-field="operate" data-sortable="false" data-searchable="false">操作</th>*@
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var permission in Model)
+                                        {
+                                            <tr>
+                                                @*<td>@permission.Id</td>*@
+                                                <td>@permission.Name</td>
+                                                <td>@permission.Description</td>
+                                                @*<td>
+                            <a href="@Url.EditPermission(permission.Id)" class="btn btn-xs btn-primary" dialog><i class="fa fa-edit"></i> 编辑</a>
+                            <a href="@Url.Action("DeletePermission", new { id = permission.Id })" class="deletebutton btn btn-xs btn-danger"><i class="fa fa-trash"></i> 删除</a>
+                        </td>*@
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-5">
+                            </div>
+                            <div class="col-sm-7">
+                                <div class="dataTables_paginate paging_simple_numbers">
+                                    @Html.Pager(Model)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+@section scripts{
+    <script type="text/javascript">
+        function OnSuccessCallBack(data) {
+            layer.closeAll("page");
+            layer.msg(data.Message, { icon: data.Status, time: 1500 }, function () {
+                if (data.Status == 1) {
+                    window.location.reload();
+                }
+            });
+        }
+        
+        bootstraptableCardView("tb_Permissions");
+    </script>
+}

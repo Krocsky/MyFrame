@@ -1,0 +1,56 @@
+﻿@model List<User>
+@{
+    ViewBag.Title = "校长权限";
+    Layout = "~/Views/Shared/_Iframe.cshtml";
+}
+@Styles.Render("~/bundles/bootstrapselectcss")
+<section class="content">
+    <div class="row manageuser">
+        <div class="col-md-3">
+            <div class="form-group selectpicker-customer">
+                <div class="box-header">
+                    <h3 class="box-title text-center title-height-30">校长列表</h3>
+                </div>
+                <select id="roleSelect" class="form-control selectpicker show-tick" data-live-search="true">
+                    @foreach (var master in Model)
+                    {
+                        <option value="@master.Id">@master.TrueName</option>
+                    }
+                </select>
+            </div>
+        </div>
+        <div class="col-md-9">
+            <div id="userlist" class="box" style="min-height:500px;">
+            </div>
+        </div>
+    </div>
+</section>
+@section scripts{
+@Scripts.Render("~/bundles/bootstrapselectjs")
+    <script>
+        $(function () {
+            $("#roleSelect").change(function () {
+                var masterId = $(this).val();
+                GetRoleUsers(masterId);
+            });
+
+            $(function () {
+                if ($("#roleSelect option").size() > 0) {
+                    var option = $("#roleSelect option").first();
+                    $("#roleSelect").val(option.val());
+                    GetRoleUsers(option.val());
+                }
+            });
+
+            function GetRoleUsers(masterId) {
+                var loading = layer.load(0, { shade: false });
+                if (!isNaN(masterId)) {
+                    $.get("@Url.Action("EditPermissionToMaster", "Admin")?masterId=" + masterId, function (data) {
+                        $("#userlist").html(data);
+                        layer.close(loading);
+                    });
+                }
+            }
+        });
+    </script>
+}

@@ -1,0 +1,190 @@
+﻿@model UserEditModel
+@{
+    ViewBag.Title = "个人信息";
+    Layout = "~/Views/Shared/_Iframe.cshtml";
+}
+@Scripts.Render("~/bundles/fullavatareditor/js")
+@using (Html.BeginForm("PersonalInfo", "Account", FormMethod.Post, new { id = "personalForm", @class = "form-horizontal", enctype = "multipart/form-data" }))
+{
+    @Html.Message()
+    @Html.HiddenFor(n => n.Id)
+    <div class="form-group">
+        @Html.LabelFor(n => n.UserHead, new { @class = "col-sm-2 control-label" })
+        <div class="col-sm-10">
+            <div class="tabs-container">
+                <ul class="nav nav-tabs">
+                    <li class="active">
+                        <a data-toggle="tab" id="upload" href="#flash" aria-expanded="true" class="flashTab"> 本地上传</a>
+                    </li>
+                    <li class="">
+                        <a data-toggle="tab" id="webcam" href="#flash" aria-expanded="false" class="flashTab"> 摄像头拍照</a>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <div id="flash" class="tab-pane active">
+                        <div class="panel-body">
+                            <div style="width:600px">
+                                <div id="swfContainer">本组件需要安装Flash Player后才可使用，请从<a href="http://www.adobe.com/go/getflashplayer">这里</a>下载安装。</div>
+                                <div id="editorPanelButtons" style="display:none">
+                                    <button class="btn btn-primary" id="save">保存</button>
+                                    <button class="btn btn-default" id="cancel">取消</button>
+                                </div>
+                                <div id="webcamPanelButton" style="display:none">
+                                    <button class="btn btn-primary" id="shutter">拍照</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(n => n.TrueName, new { @class = "col-sm-2 control-label" })
+        <div class="col-sm-10">
+            @Html.TextBoxFor(n => n.TrueName, new { @class = "form-control" })
+            @Html.ValidationMessageFor(n => n.TrueName)
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(n => n.Email, new { @class = "col-sm-2 control-label" })
+        <div class="col-sm-10">
+            @Html.TextBoxFor(n => n.Email, new { @class = "form-control" })
+            @Html.ValidationMessageFor(n => n.Email)
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(n => n.PhoneNumber, new { @class = "col-sm-2 control-label" })
+        <div class="col-sm-10">
+            @Html.TextBoxFor(n => n.PhoneNumber, new { @class = "form-control" })
+            @Html.ValidationMessageFor(n => n.PhoneNumber)
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(n => n.Area, new { @class = "col-sm-2 control-label" })
+        <div class="col-sm-10">
+            @Html.TextBoxFor(n => n.Area, new { @class = "form-control" })
+            @Html.ValidationMessageFor(n => n.Area)
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+            <center>
+                <button type="submit" class="btn btn-primary">提交</button>
+            </center>
+        </div>
+    </div>
+}
+@section scripts
+{
+    <script type="text/javascript">
+        swfobject.addDomLoadEvent(function () {
+            var webcamAvailable = false;
+            var swf = new fullAvatarEditor("@WebHelper.ResolveUrl("~/Scripts/fullavatareditor/fullAvatarEditor.swf")", "@WebHelper.ResolveUrl("~/Scripts/fullavatareditor/expressInstall.swf")", "swfContainer", 335, 600, {
+                id: 'swf',
+                upload_url: '@Url.Action("UploadAvatar","Api")',
+                method: 'post',
+                src_upload: 1,
+                avatar_box_border_width: 0,
+                tab_visible: false,
+                button_visible: false,
+                browse_box_align: 38,
+                webcam_box_align: 38,
+                avatar_sizes: '100*100@*|50*50|32*32*@',
+                avatar_sizes_desc: '100*100像素@*|50*50像素|32*32像素*@'
+            }, function (data) {
+                var id = this.id;
+                switch (data.code) {
+                    case 2:
+                        if (data.type == 0) {
+                            $('#webcamPanelButton').hide();
+                            $('#editorPanelButtons').show();
+                        }
+                        break;
+                    case 3:
+                        if (data.type == 0) {
+                            $('#shutter').removeClass('Disabled');
+                            $('#webcamPanelButton').show();
+                            webcamAvailable = true;
+                        }
+                        else {
+                            webcamAvailable = false;
+                            $('#webcamPanelButton').hide();
+                            if (data.type == 1) {
+                                layer.msg("用户拒绝使用摄像头!", { icon: 2 });
+                            }
+                            else {
+                                layer.msg("摄像头被占用", { icon: 2 });
+                            }
+                        }
+                        break;
+                    case 4:
+                        layer.msg("您选择的图片大小（" + data.content + "）超出了指定值(2MB)。", { icon: 2 });
+                        break;
+                    case 5:
+                        //如果上传成功
+                        if (data.type == 0) {
+                            layer.msg(data.content.msg, { icon: 1, shade: 0.3, time: 1000 });
+                        }
+                        else {
+                            layer.msg(data.content, { icon: 1 });
+                        }
+                        break;
+                }
+            }
+            );
+
+            $(".flashTab").click(function (e) {
+                e.preventDefault();
+                if ($(this).parent().hasClass("active")) {
+                    return;
+                }
+
+                $(this).parent().addClass("active").siblings().removeClass("active");
+                var id = $(this).attr("id");
+                if (id == "upload") {
+                    $('#editorPanelButtons,#webcamPanelButton').hide();
+                } else {
+                    $('#editorPanelButtons').hide();
+                    if (webcamAvailable) {
+                        $('#shutter').removeClass('Disabled');
+                        $('#webcamPanelButton').show();
+                    }
+                }
+                swf.call('changepanel', this.id);
+            });
+
+            //保存按钮
+            $('#save').click(function (e) {
+                e.preventDefault();
+                swf.call('upload');
+            });
+
+            //取消按钮
+            $('#cancel').click(function (e) {
+                e.preventDefault();
+                var activedTab = $('li.active>a').attr("id");
+                swf.call('changepanel', activedTab);
+                if (activedTab === 'webcam') {
+                    $('#editorPanelButtons').hide();
+                    if (webcamAvailable) {
+                        $('#shutter').removeClass('Disabled');
+                        $('#webcamPanelButton').show();
+                    }
+                }
+                else {
+                    $('#editorPanelButtons,#webcamPanelButton').hide();
+                }
+            });
+
+            //点击拍照按钮的事件
+            $('#shutter').click(function (e) {
+                e.preventDefault();
+                if (!$(this).hasClass('Disabled')) {
+                    $(this).addClass('Disabled');
+                    swf.call('pressShutter');
+                }
+            });
+        });
+    </script>
+}

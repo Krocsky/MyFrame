@@ -1,0 +1,51 @@
+﻿@{
+    ViewBag.Title = "Myframe";
+    Layout = "~/Views/Shared/_Admin.cshtml";
+}
+
+@section scripts{
+    <script>
+        $(function () {
+
+            checkTime();
+
+            var msg = "@ViewBag.Msg";
+            if (msg == "noEmployeeInfo" && "@(UserContext.CurrentUser.HasPermission("个人档案"))" == "True") {
+                layer.alert("请填写员工档案相关信息", {
+                    icon: 6
+                });
+                $(".J_menuItem[href='/School/ManageEmployeeArchive']").trigger("click");
+            }
+        });
+
+        var myTime;
+        var time = 1000 * 60 * 120;
+
+        function checkTime() {
+            myTime = setTimeout("timeOut()", time);
+
+            $(document).keydown(function () {
+                resetTime();
+            });
+            $(document).click(function () {
+                resetTime();
+            });
+        }
+
+        function resetTime() {
+            clearTimeout(myTime);
+            myTime = setTimeout("timeOut()", time);
+        }
+
+        function timeOut() {
+            layer.alert('您的登录已超时, 请点确定后重新登录!', {
+                icon: 3,
+                title: '提示',
+                closeBtn: 0
+            }, function (index) {
+                layer.close(index);
+                document.location.href = "@Url.Action("Login","Account")";
+            });
+        }
+    </script>
+}

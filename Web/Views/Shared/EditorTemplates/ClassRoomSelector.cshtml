@@ -1,0 +1,16 @@
+﻿@{
+    string searchUrl = Url.Action("SearchClassRoom", "Api");
+    string name = ViewData.GetString("name");
+    string defaultValue = ViewData.GetString("defaultValue");
+    int userId = ViewData.GetInt("userId");
+}
+<div class="input-group">
+    <input type="text" class="form-control classRoomSelector" data-contorlId="@name" data-url="@searchUrl" value="@defaultValue" data-userId="@userId" />
+    @Html.Hidden(name)
+    <div class="input-group-btn"  style="width:0px;">
+        <button type="button" class="btn btn-white dropdown-toggle" data-toggle="dropdown">
+            <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-right" role="menu"></ul>
+    </div>
+</div>

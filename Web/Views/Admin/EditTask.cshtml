@@ -1,0 +1,304 @@
+﻿@model QuartzTaskEditModel
+@{
+    ViewBag.Title = "编辑任务";
+}
+<style type="text/css">
+    .panel-body {
+        padding: 10px !important;
+    }
+</style>
+<div class="ibox-content">
+    @using (Ajax.BeginForm("EditTask", "Admin", null, new AjaxOptions { OnSuccess = "OnSuccessCallBack" }, new { @class = "form-horizontal" }))
+    {
+        <div class="box-body">
+            @Html.HiddenFor(model => model.Id)
+            <div class="form">
+                <div class="form-group">
+                    @Html.LabelFor(n => n.TaskName, new { @class = "col-sm-3 control-label" })
+                    <div class="col-sm-9">
+                        @Html.TextBoxFor(n => n.TaskName, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(n => n.TaskName)
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(n => n.ClassType, new { @class = "col-sm-3 control-label" })
+                    <div class="col-sm-9">
+                        @Html.DropDownListFor(model => model.ClassType, ViewData["classType"] as List<SelectListItem>, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(n => n.ClassType)
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(n => n.IsRepeat, new { @class = "col-sm-3 control-label" })
+                    <div class="col-sm-9">
+                        <div class="radio radio-inline i-checks">
+                            <label>
+                                <input type="radio" id="IsRepeatRadio1" value="True" name="IsRepeat" checked="@Model.IsRepeat"> <i></i> 是
+                            </label>
+                        </div>
+                        <div class="radio radio-inline i-checks">
+                            <label>
+                                <input type="radio" id="IsRepeatRadio2" value="False" name="IsRepeat" checked="@(!Model.IsRepeat)"> <i></i> 否
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group" id="OnceDateDiv">
+                    @Html.LabelFor(n => n.OnceDate, new { @class = "col-sm-3 control-label" })
+                    <div class="col-sm-9">
+                        @Html.TextBoxFor(n => n.OnceDate, "{0:yyyy-MM-dd HH:mm}", new { @class = "form-control" })
+                    </div>
+                </div>
+
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">频率</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="form-group" group="frequency">
+                            <label class="col-sm-3 control-label">执行</label>
+                            <div class="col-sm-9">
+                                @Html.DropDownListFor(model => model.Frequency, null, new { @class = "form-control" })
+                            </div>
+                        </div>
+                        <div class="form-group" group="frequency_@((int)TaskFrequency.EveryDay)">
+                            <label class="col-sm-3 control-label">执行频率</label>
+                            <div class="col-sm-5">
+                                <div class="input-group">
+                                    @Html.DropDownListFor(model => model.Day, null, new { @class = "form-control" })
+                                    <span class="input-group-addon">天</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group" group="frequency_@((int)TaskFrequency.PerMonth)">
+                            <label class="col-sm-3 control-label">执行频率</label>
+                            <div class="col-sm-9">
+                                <div class="input-group">
+                                    <span class="input-group-addon">
+                                        @Html.RadioButtonFor(model => model.DayOrWeekly, true, new { id = "daofweekly_f" }) 在第
+                                    </span>
+                                    @Html.DropDownListFor(model => model.DayOfMouth, null, new { @class = "form-control" })
+                                    <span class="input-group-addon">天</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group" group="frequency_@((int)TaskFrequency.PerMonth)">
+                            <label class="col-sm-3 control-label"></label>
+                            <div class="col-sm-9">
+                                <div class="input-group">
+                                    <span class="input-group-addon">
+                                        @Html.RadioButtonFor(model => model.DayOrWeekly, false, new { id = "daofweekly_t" }) 在
+                                    </span>
+                                    @Html.DropDownListFor(model => model.Number, null, new { @class = "form-control", style = "width:50%" })
+                                    @Html.DropDownListFor(model => model.WeeklyOfMouth, null, new { @class = "form-control", style = "width:50%" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group" group="frequency_@((int)TaskFrequency.PerMonth)">
+                            <label class="col-sm-3 control-label"></label>
+                            <div class="col-sm-9">
+                                <div class="input-group">
+                                    <span class="input-group-addon">每</span>
+                                    @Html.DropDownListFor(model => model.Mouth, null, new { @class = "form-control" })
+                                    <span class="input-group-addon">个月</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group" group="frequency_@((int)TaskFrequency.Weekly)">
+                            <label class="col-sm-3 control-label">执行频率</label>
+                            <div class="col-sm-9">
+                                @if (ViewData["DayOfWeek"] != null)
+                                {
+                                    string[] dayOfWeeks = Model.DayOfWeek;
+                                    foreach (KeyValuePair<string, string> item in (Dictionary<string, string>)ViewData["DayOfWeek"])
+                                    {
+                                        string check = string.Empty;
+                                        if (dayOfWeeks != null && dayOfWeeks.Contains(item.Value))
+                                        {
+                                            check = "checked=\"checked\"";
+                                        }
+                                        <div class="checkbox i-checks">
+                                            <label>
+                                                <input type="checkbox" name="DayOfWeek" id="DayOfWeek_@(item.Value)" value="@item.Value" @check> <i></i> @item.Key
+                                            </label>
+                                        </div>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">每天频率</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="form-group" id="DayRepeat_Once">
+                            <label class="col-sm-3 control-label">执行一次</label>
+                            <div class="col-sm-9">
+                                <div class="input-group">
+                                    <span class="input-group-addon">
+                                        @Html.RadioButtonFor(model => model.DayRepeat, false)
+                                    </span>
+                                    @Html.TextBoxFor(n => n.OnceTime, "{0:HH:mm}", new { @class = "form-control" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group" id="DayRepeat_DayRepeat">
+                            <label class="col-sm-3 control-label">重复执行</label>
+                            <div class="col-sm-9">
+                                <div class="input-group">
+                                    <span class="input-group-addon">
+                                        @Html.RadioButtonFor(model => model.DayRepeat, true)
+                                    </span>
+                                    @Html.DropDownListFor(model => model.Hours, null, new { @class = "form-control", style = "width:50%" })
+                                    @Html.DropDownListFor(model => model.Minutes, null, new { @class = "form-control", style = "width:50%" })
+                                    @Html.DropDownListFor(model => model.Seconds, null, new { @class = "form-control", style = "width:50%" })
+                                    <select id="DayFrequency" class="form-control col-sm-5" style="width:50%">
+                                        <option value="Hours">小时</option>
+                                        <option value="Minutes">分钟</option>
+                                        <option value="Seconds">秒</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">持续时间</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="form-group" id="DayRepeat_Once">
+                            <label class="col-sm-3 control-label">开始日期</label>
+                            <div class="col-sm-9">
+                                @Html.TextBoxFor(n => n.StartDate, "{0:yyyy-MM-dd HH:mm}", new { @class = "form-control" })
+                            </div>
+                        </div>
+                        <div class="form-group" id="DayRepeat_Once">
+                            <label class="col-sm-3 control-label">结束日期</label>
+                            <div class="col-sm-9">
+                                @Html.TextBoxFor(n => n.EndDate, "{0:yyyy-MM-dd HH:mm}", new { @class = "form-control" })
+                            </div>
+                        </div>
+                        <div class="form-group" id="DayRepeat_Once">
+                            @Html.LabelFor(model => model.Enabled, new { @class = "col-sm-3 control-label" })
+                            <div class="col-sm-9">
+                                <div class="radio radio-inline i-checks">
+                                    <label>
+                                        <input type="radio" id="IsEnabled1" value="true" name="Enabled" checked="@Model.Enabled"> <i></i> 是
+                                    </label>
+                                </div>
+                                <div class="radio radio-inline i-checks">
+                                    <label>
+                                        <input type="radio" id="IsEnabled2" value="false" name="Enabled" checked="@(!Model.Enabled)"> <i></i> 否
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layer-btn">
+            <button type="button" class="btn btn-default btn-sm pull-right" cancel>取消</button>
+            <button type="submit" class="btn btn-primary btn-sm pull-right">编辑</button>
+        </div>
+    }
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var $dayRepeats = $('input[name="DayRepeat"]');
+        $dayRepeats.click(function () {
+            $dayRepeats.parent().siblings("input,select").attr("disabled", "disabled");
+            $(this).parent().siblings("input,select").removeAttr("disabled");
+        });
+        $('input[name="DayRepeat"]:checked').click();
+
+        $('input[name=IsRepeat]').on("ifChecked", function () {
+            RepeatCheck();
+        });
+
+        $(".i-checks").iCheck({ checkboxClass: "icheckbox_square-green", radioClass: "iradio_square-green" });
+
+        $('#Frequency').change(function () {
+            var select = $(this);
+            $("div[group=frequency_" + select.val() + "]").show();
+            $("div[group^=frequency_]").each(function () {
+                if ($(this).attr('group') != '' && $(this).attr('group') != "frequency_" + select.val()) {
+                    $(this).hide();
+                }
+
+            });
+        }).change();
+
+        $('#OnceTime').clockpicker({ autoclose: true });
+        $('#OnceDate').datetimepicker({
+            format: "yyyy-mm-dd hh:ii",
+            language: "zh-CN",
+            autoclose: true,
+            todayHighlight: true,
+        });
+        $('#StartDate').datetimepicker({
+            format: "yyyy-mm-dd hh:ii",
+            language: "zh-CN",
+            autoclose: true,
+            todayHighlight: true,
+        });
+        $('#EndDate').datetimepicker({
+            format: "yyyy-mm-dd hh:ii",
+            language: "zh-CN",
+            autoclose: true,
+            todayHighlight: true,
+        });
+
+        $('#Hours,#Minutes,#Seconds').hide();
+
+        if ($('#Seconds').val() >= 1)
+            $('#DayFrequency').val('Seconds');
+        else if ($('#Minutes').val() >= 1)
+            $('#DayFrequency').val('Minutes');
+        else
+            $('#DayFrequency').val('Hours');
+
+        $('#' + $('#DayFrequency').val()).show();
+
+        $('#DayFrequency').change(function () {
+            $('#Hours').hide().val(1);
+            $('#Minutes,#Seconds').hide().val(0);
+            $('#' + $(this).val()).show();
+
+        });
+
+        RepeatCheck();
+
+        $('input[name="DayOrWeekly"]').click(function () {
+            if ($(this).is(":checked") && $(this).val() == "True") {
+                $('#Number').attr('disabled', 'disabled');
+                $('#WeeklyOfMouth').attr('disabled', 'disabled');
+                $('#DayOfMouth').removeAttr('disabled', 'disabled');
+            }
+            else {
+                $('#WeeklyOfMouth').removeAttr('disabled', 'disabled');
+                $('#Number').removeAttr('disabled', 'disabled');
+                $('#DayOfMouth').attr('disabled', 'disabled');
+            }
+        });
+
+        $('input[name="DayOrWeekly"]:checked').click();
+    });
+
+    function RepeatCheck() {
+        if ($('input[name=IsRepeat]:checked').val() == 'True') {
+
+            $("div[group^=frequency] input,select").removeAttr("disabled");
+            $("div[id^=DayRepeat]").removeAttr("disabled");
+            $('input[name="DayRepeat"]:checked').click();
+            $('#OnceDateDiv').hide();
+        }
+        else {
+            $("div[group^=frequency] input,select").not("#ClassType").attr("disabled", "disabled");
+            $("div[id^=DayRepeat]").attr("disabled", "disabled");
+            $('#OnceDateDiv').show();
+        }
+    }
+</script>

@@ -1,0 +1,53 @@
+﻿@model IPagedList<User>
+@{
+    int roleId = ViewData.Get<int>("roleId", 0);
+}
+
+@*@Styles.Render("~/Content/bootstraptablecss")
+    @Scripts.Render("~/Scripts/bootstraptablejs")*@
+
+<div class="box-header">
+    <h3 class="box-title"><a href="@Url.AddPermissionToRole(roleId)" class="btn btn-sm btn-primary" dialog>添加用户</a></h3>
+</div>
+<div class="box-body no-padding">
+    <table data-mobile-responsive="true" data-row-style="rowStyle" data-sort-name="id" data-sort-order="asc" data-striped="true" data-toggle="table"
+           id="tb_MasterPermission">
+        <thead>
+            <tr>
+                <th data-field="id" data-sortable="true">ID</th>
+                <th data-field="username" data-sortable="true">用户名</th>
+                <th data-field="name" data-sortable="true">姓名</th>
+                <th data-field="role" data-sortable="true">角色</th>
+                <th data-field="createdate" data-sortable="true">注册时间</th>
+                <th data-field="operate" data-sortable="false" data-searchable="false">操作</th>
+            </tr>
+        </thead>
+        @if (Model != null && Model.Count > 0)
+        {
+            <tbody>
+                @foreach (var user in Model)
+                {
+                    <tr>
+                        <td>@user.Id</td>
+                        <td>@user.UserName</td>
+                        <td><img class="userhead" src="@Url.UserHead(user.Id)" alt="@user.TrueName" /><span class="username">@user.TrueName</span></td>
+                        <td>
+                            @foreach (var role in user.Roles)
+                            {
+                                <span class="label label-success">@role.GetRole().Name</span>
+                            }
+                        </td>
+                        <td>@user.CreatedTime</td>
+                        <td><a href="@Url.Action("DeleteUserRole", new { userId = user.Id, roleName=ViewBag.RoleName })" class="deletebutton btn btn-xs btn-danger"><i class="fa fa-trash"></i> 移除</a></td>
+                    </tr>
+                }
+            </tbody>
+        }
+    </table>
+</div>
+<div class="box-footer clearfix">
+    @Html.Pager(Model)
+</div>
+<script>
+    bootstraptableCardView("tb_MasterPermission");
+</script>

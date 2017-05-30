@@ -1,0 +1,54 @@
+﻿@model List<Role>
+@{
+    ViewBag.Title = "角色管理";
+    Layout = "~/Views/Shared/_Iframe.cshtml";
+}
+<section class="content">
+    <div class="row manageuser">
+        <div class="col-md-3">
+            <div class="form-group selectpicker-customer">
+                <div class="box-header">
+                    <h3 class="box-title text-center title-height-30">角色列表</h3>
+                </div>
+                <select id="roleSelect" class="form-control selectpicker show-tick" data-live-search="true">
+                    @foreach (var role in Model)
+                    {
+                        <option value="@role.Id">@role.Name</option>
+                    }
+                </select>
+            </div>
+        </div>
+        <div class="col-md-9">
+            <div id="userlist" class="box" style="min-height:500px;">
+            </div>
+        </div>
+    </div>
+</section>
+@section scripts{
+    <script>
+        $(function () {
+            $("#roleSelect").change(function () {
+                var roleId = $(this).val();
+                GetRoleUsers(roleId);
+            });
+
+            $(function () {
+                if ($("#roleSelect option").size() > 0) {
+                    var option = $("#roleSelect option").first();
+                    $("#roleSelect").val(option.val());
+                    GetRoleUsers(option.val());
+                }
+            });
+
+            function GetRoleUsers(roleId) {
+                var loading = layer.load(0, { shade: false });
+                if (!isNaN(roleId)) {
+                    $.get("@Url.Action("_RoleUsers","Admin")?id=" + roleId, function (data) {
+                        $("#userlist").html(data);
+                        layer.close(loading);
+                    });
+                }
+            }
+        });
+    </script>
+}

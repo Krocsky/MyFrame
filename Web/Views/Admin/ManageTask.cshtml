@@ -1,0 +1,254 @@
+﻿@model IPagedList<QuartzTask>
+@{
+    ViewBag.Title = "任务管理";
+    Layout = "~/Views/Shared/_Iframe.cshtml";
+}
+
+<section class="content">
+    <div class="row manageuser">
+        <div class="col-xs-12">
+            <div class="box">
+                <div class="box-body">
+                    <div class="dataTables_wrapper form-inline dt-bootstrap">
+                        @using (Html.BeginForm("ManageTask", "Admin", FormMethod.Get, new { id = "taskForm" }))
+                        {
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div id="toolbar" class="btn-group btn-search-onTop">
+                                        <a href="@Url.Action("EditTask")" class="btn btn-sm btn-primary" dialog>新增</a><span class="pull-left">&nbsp;&nbsp;</span>
+                                        <a class="btn btn-sm btn-primary" id="Edit">编辑</a><span>&nbsp;&nbsp;</span>
+                                        <button class="btn btn-sm btn-primary deletebutton" id="Delete">删除</button>
+                                    </div>
+                                    <table data-mobile-responsive="true" data-row-style="rowStyle" data-sort-name="id" data-sort-order="asc" data-striped="true" data-toggle="table" id="tb_Navigation">
+                                        <thead>
+                                            <tr class="tn-table-grid-header">
+                                                <th>
+                                                    <input id="select-all" type="checkbox">
+                                                </th>
+                                                <th class="tn-border-gray tn-border-bottom tn-text-note">
+                                                    任务名称
+                                                </th>
+                                                <th class="tn-border-gray tn-border-bottom tn-text-note">
+                                                    类型
+                                                </th>
+                                                <th class="tn-border-gray tn-border-bottom tn-text-note">
+                                                    上次结束时间
+                                                </th>
+                                                <th class="tn-border-gray tn-border-bottom tn-text-note">
+                                                    上次执行状态
+                                                </th>
+                                                <th class="tn-border-gray tn-border-bottom tn-text-note">
+                                                    上次执行错误
+                                                </th>
+                                                <th class="tn-border-gray tn-border-bottom tn-text-note">
+                                                    下次运行时间
+                                                </th>
+                                                <th class="tn-border-gray tn-border-bottom tn-text-note">
+                                                    是否启用
+                                                </th>
+                                                <th class="tn-border-gray tn-border-bottom tn-text-note">
+                                                    操作
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var task in Model)
+                                            {
+                                                bool isExpired = task.EndDate.HasValue && task.EndDate.Value.ToLocalTime() < DateTime.Now;
+                                                <tr>
+                                                    <td>
+                                                        <input name="Id" class="tn-checkbox" type="checkbox" value="@task.Id" />
+                                                    </td>
+                                                    <td>@task.Name</td>
+                                                    <td>@task.ClassType</td>
+                                                    <td>
+                                                        @if (isExpired)
+                                                        {
+                                                            <text>已过期</text>
+                                                        }
+                                                        else
+                                                        {
+                                                            @(task.LastEnd.HasValue ? task.LastEnd.Value.ToFriendlyDate() : "无")
+                                                        }
+                                                    </td>
+                                                    <td>
+                                                        @if (task.LastIsSuccess.HasValue)
+                                                        {
+                                                            if (task.LastIsSuccess.Value)
+                                                            {
+                                                                <span class="label label-primary"><i class="fa fa-check"></i></span>
+                                                            }
+                                                            else
+                                                            {
+                                                                <span class="label label-danger"><i class="fa fa-times"></i></span>
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            <text>无</text>
+                                                        }
+                                                    </td>
+                                                    <td>
+                                                        <span title="@(task.LastFailMessage ?? "无")">
+                                                            @StringHelper.Trim(task.LastFailMessage ?? "无", 25)
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        @if (isExpired)
+                                                        {
+                                                            <text>已过期</text>
+                                                        }
+                                                        else
+                                                        {
+                                                            if (!task.NextStart.HasValue)
+                                                            {
+                                                                <text>无</text>
+                                                            }
+                                                            else
+                                                            {
+                                                                @task.NextStart.Value.ToString("yyyy-MM-dd HH:mm:ss")
+                                                            }
+                                                        }
+                                                    </td>
+                                                    <td>
+                                                        @if (task.Enabled)
+                                                        {
+                                                            <span class="label label-primary"><i class="fa fa-check"></i></span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span class="label label-danger"><i class="fa fa-times"></i></span>
+                                                        }
+                                                    </td>
+                                                    <td>
+                                                        <button class="btn btn-xs btn-primary runOnce" data-loading-text="运行" data-id="@task.Id">运行</button>
+                                                    </td>
+                                                </tr>
+                                            }
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        }
+                        <div class="row">
+                            <div class="col-sm-5">
+                            </div>
+                            <div class="col-sm-7">
+                                <div class="dataTables_paginate paging_simple_numbers">
+                                    @Html.Pager(Model)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+@section scripts{
+    @Styles.Render("~/bundles/datepickercss")
+    @Scripts.Render("~/bundles/datepickerjs")
+    @Styles.Render("~/bundles/datetimepickercss")
+    @Scripts.Render("~/bundles/datetimepickerjs")
+    <script type="text/javascript">
+        function OnSuccessCallBack(data) {
+            layer.closeAll("page");
+            layer.msg(data.Message, { icon: data.Status, time: 1500 }, function () {
+                if (data.Status == 1) {
+                    var loading = layer.load(0, { shade: false });
+                    window.location.reload();
+                }
+            });
+        }
+
+        $(function () {
+            //全选
+            $(document).on("click", "#select-all", function () {
+                if (this.checked) {
+                    $(".tn-checkbox").each(function () {
+                        this.checked = true;
+                    });
+                }
+                else {
+                    $(".tn-checkbox").each(function () {
+                        this.checked = false;
+                    });
+                }
+            });
+
+            $(document).on("click", "#Edit", function (e) {
+                e.preventDefault();
+                if ($("input[name='Id']:checked").length == 0) {
+                    layer.msg("请选择一个任务！", { icon: 0, time: 2000 });
+                    return;
+                }
+                else if ($("input[name='Id']:checked").length > 1) {
+                    layer.msg("只能选择一个任务进行修改！", { icon: 0, time: 2000 });
+                    return;
+                }
+                else {
+                    var checkedId = $("input[name='Id']:checked").val();
+                    var title = "编辑任务";
+                    var loading = layer.load(0, { shade: false });
+                    $.get('@Url.EditTask()', { id: checkedId }, function (data) {
+                        layer.close(loading);
+                        var index = layer.open({
+                            type: 1,
+                            title: title,
+                            content: data,
+                            maxWidth: "400",
+                            success: function (layero, index) {
+                                $.validator.unobtrusive.parse(document);
+                            }
+                        });
+                        layer.title(window.title, index)
+                    });
+                }
+            });
+
+            //批量删除
+            $(document).on("click", "#Delete", function (e) {
+                e.preventDefault();
+                if ($("input[name='Id']:checked").length == "0") {
+                    layer.msg("至少选择一个任务！", { icon: 0, time: 2000 });
+                    return;
+                }
+                else {
+                    layer.confirm('您确认要删除选中的任务吗？', {
+                        btn: ['确定', '取消']
+                    }, function () {
+                        $.post('@Url.DeleteTask()', $("#taskForm").serialize(), function (data) {
+                            layer.msg(data.Message, {
+                                icon: data.Status,
+                                time: 2000
+                            }, function () {
+                                if (data.Status == 1) {
+                                    window.location.reload();
+                                }
+                            });
+                        });
+                    });
+                }
+            });
+
+            //运行
+            $(document).on("click", ".runOnce", function (e) {
+                e.preventDefault();
+                var $this = $(this);
+                $this.attr("disabled", true);
+                $.post('@Url.Action("RunTask","Admin")', { id: $(this).data("id") }, function (data) {
+                    layer.msg(data.Message, {
+                        icon: data.Status,
+                        time: 2000
+                    }, function () {
+                        $this.removeAttr("disabled");
+                        if (data.Status == 1) {
+                            window.location.reload();
+                        }
+                    });
+                });
+            });
+        })
+    </script>
+}

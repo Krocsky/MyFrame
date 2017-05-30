@@ -1,0 +1,14 @@
+﻿@{
+    ViewBag.Title = "上传测试";
+    Layout = "~/Views/Shared/_Iframe.cshtml";
+}
+
+<section class="content">
+    @Html.Upload("test", TenantType.School)
+</section>
+
+
+@section scripts{
+    @Styles.Render("~/bundles/fileinput/css")
+    @Scripts.Render("~/bundles/fileinput/js")
+}

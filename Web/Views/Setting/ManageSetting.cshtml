@@ -1,0 +1,71 @@
+﻿@model IPagedList<Setting>
+@{
+    Layout = "~/Views/Shared/_Iframe.cshtml";
+}
+<section class="content">
+    <div class="row">
+        <div class="col-xs-12">
+            @using (Html.BeginForm("ManageSetting", "Setting", FormMethod.Get, new { id = "SettingForm" }))
+            {
+                <div class="box">
+                    <div class="box-header">
+                        @Html.TextBox("searchInputs", "", new { @class = "form-control pull-left", @style = "width:150px;", @placeholder = "设置名称/编号" })<label class="pull-left">&nbsp;&nbsp;&nbsp;</label>
+                        <button class="btn btn-sm btn-primary pull-left" type="submit">查询</button><label class="pull-left">&nbsp;&nbsp;&nbsp;</label>
+                        <h3 class="box-title"><a href="@Url.Action("EditSetting")" class="btn btn-sm btn-primary" dialog>添加设置</a></h3>
+                    </div>
+                    <div class="box-body">
+                        <div class="dataTables_wrapper form-inline dt-bootstrap">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <table data-mobile-responsive="true" data-row-style="rowStyle" data-sort-name="id" data-sort-order="asc" data-toolbar="#toolbar" data-striped="true" data-toggle="table" id="tb_setting">
+                                        <thead>
+                                            <tr>
+                                                <th data-field="Name" data-sortable="true">名称</th>
+                                                <th data-field="Code" data-sortable="true">字符串</th>
+                                                <th data-field="Number" data-sortable="true">数值</th>
+                                                <th data-field="operate" data-sortable="false" data-searchable="false">操作</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var setting in Model)
+                                            {
+                                                <tr>
+                                                    <td>@setting.Name</td>
+                                                    <td>@(setting.Code)</td>
+                                                    <td>@(setting.Number)</td>
+                                                    <td>
+                                                        <a href="@Url.Action("EditSetting", new {id = setting.Id})" class="btn btn-xs btn-primary" dialog>
+                                                            <i class="fa fa-edit"></i> 编辑
+                                                        </a>
+                                                        <a href="@Url.Action("DeleteSetting", new {id = setting.Id})" class="deletebutton btn btn-xs btn-danger" dialog>
+                                                            <i class="fa fa-trash"></i> 移除
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            @Html.Pager(Model)
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+@section scripts{
+    <script type="text/javascript">
+        function OnSuccessCallBack(data) {
+            layer.closeAll("page");
+            layer.msg(data.Message, { icon: data.Status, time: 1500 }, function () {
+                if (data.Status == 1) {
+                    window.location.reload();
+                }
+            });
+        }
+
+        bootstraptableCardView("tb_setting");
+    </script>
+}

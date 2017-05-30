@@ -1,0 +1,43 @@
+﻿@model IPagedList<Permission>
+@{
+    int roleId = ViewData.Get<int>("roleId", 0);
+}
+
+@*@Styles.Render("~/Content/bootstraptablecss")
+    @Scripts.Render("~/Scripts/bootstraptablejs")*@
+
+<div class="box-header">
+    <h3 class="box-title"><a href="@Url.AddPermissionToRole(roleId)" class="btn btn-sm btn-primary" dialog>添加权限</a></h3>
+</div>
+<div class="box-body no-padding">
+    <table data-mobile-responsive="true" data-row-style="rowStyle" data-sort-name="id" data-sort-order="asc" data-striped="true" data-toggle="table" id="tb_RolePermissions">
+        <thead>
+            <tr>
+                @*<th data-field="id" data-sortable="true">ID</th>*@
+                <th data-field="name" data-sortable="true">权限名称</th>
+                <th data-field="description" data-sortable="true">权限描述</th>
+                <th data-field="operate" data-sortable="false" data-searchable="false">操作</th>
+            </tr>
+        </thead>
+        @if (Model != null && Model.Count > 0)
+        {
+            <tbody>
+                @foreach (var permission in Model)
+                {
+                    <tr>
+                        @*<td>@permission.Id</td>*@
+                        <td>@permission.Name</td>
+                        <td>@permission.Description</td>
+                        <td><a href="@Url.Action("DeleteRolePermission", new { permissionId = permission.Id, roleId = roleId })" class="deletebutton btn btn-xs btn-danger"><i class="fa fa-trash"></i> 移除</a></td>
+                    </tr>
+                }
+            </tbody>
+        }
+    </table>
+</div>
+<div class="box-footer clearfix">
+    @Html.AjaxPager(Model, WebHelper.GetCurrentUrl(), "#permissionlist")
+</div>
+<script>
+    bootstraptableCardView("tb_RolePermissions");
+</script>

@@ -1,0 +1,81 @@
+﻿@model IPagedList<User>
+@{
+    ViewBag.Title = "超级管理员管理";
+    Layout = "~/Views/Shared/_Iframe.cshtml";
+}
+
+<section class="content">
+    <div class="row manageuser">
+        <div class="col-xs-12">
+            <div class="box">
+                <div class="box-header">
+                    <h3 class="box-title"><a href="@Url.Action("EditAdmin")" class="btn btn-sm btn-primary" dialog>添加超级管理员</a></h3>
+                </div>
+                <div class="box-body">
+                    <div class="dataTables_wrapper form-inline dt-bootstrap">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <table data-mobile-responsive="true" data-row-style="rowStyle" data-sort-name="id" data-sort-order="asc" data-striped="true" data-toggle="table"
+                                       id="tb_Administrators">
+                                    <thead>
+                                        <tr>
+                                            <th data-field="id" data-sortable="true">序号</th>
+                                            <th data-field="username" data-sortable="true">登录名</th>
+                                            <th data-field="truename" data-sortable="true">姓名</th>
+                                            <th data-field="phone" data-sortable="true">电话</th>
+                                            <th data-field="address" data-sortable="true">地址</th>
+                                            <th data-field="operate" data-sortable="false" data-searchable="false">操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @{
+                                            var i = 1;
+                                            foreach (var admin in Model)
+                                            {
+                                                <tr>
+                                                    <td>@(i++)</td>
+                                                    <td>@admin.UserName</td>
+                                                    <td>@admin.TrueName</td>
+                                                    <td>@admin.PhoneNumber</td>
+                                                    <td>@admin.Area</td>
+                                                    <td>
+                                                        <a href="@Url.Action("EditAdmin", new { id = admin.Id })" class="btn btn-xs btn-primary" dialog><i class="fa fa-edit"></i> 编辑</a>
+                                                        <a href="@Url.Action("DeleteAdmin", new { id = admin.Id })" class="deletebutton btn btn-xs btn-danger"><i class="fa fa-trash"></i> 删除</a>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        }
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-5">
+                            </div>
+                            <div class="col-sm-7">
+                                <div class="dataTables_paginate paging_simple_numbers">
+                                    @Html.Pager(Model)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+@section scripts{
+    <script type="text/javascript">
+        function OnSuccessCallBack(data) {
+            layer.closeAll("page");
+            layer.msg(data.Message, { icon: data.Status, time: 1500 }, function () {
+                if (data.Status == 1) {
+                    window.location.reload();
+                }
+            });
+        }
+
+        bootstraptableCardView("tb_Administrators");
+    </script>
+}

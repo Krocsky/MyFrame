@@ -1,0 +1,157 @@
+﻿@model string
+@{
+    ViewBag.Title = "角色管理-菜单权限分配";
+    //Layout = "~/Views/Shared/_Iframe.cshtml";
+    string jsonNew = ViewData["jsonNew"].ToString();
+}
+@Styles.Render("~/Content/bootstraptablegtreecss")
+@Scripts.Render("~/Scripts/bootstraptablegtreejs")
+<div class="ibox-content">
+    <style type="text/css">
+        /* Define custom width and alignment of table columns */
+        #tb_RolePermissions {
+            table-layout: fixed;
+        }
+
+            #tb_RolePermissions tr td:nth-of-type(1) {
+                text-align: left;
+            }
+
+            #tb_RolePermissions tr td:nth-of-type(2) {
+                text-align: left;
+            }
+
+            #tb_RolePermissions tr td:nth-of-type(3) {
+                min-width: 100px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+    </style>
+    <div class="row manageuser">
+        <div class="col-xs-12">
+            <div class="box">
+                <div class="box-body">
+                    <div class="dataTables_wrapper form-inline dt-bootstrap">
+                        @using (Ajax.BeginForm("DistributionNavigation", "Admin", null, new AjaxOptions { OnSuccess = "OnSuccessCallBack" }, new { id = "ManageDistributionPermission" }))
+                        {
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div id="toolbar" class="btn-group btn-search-onTop">
+                                        <input type="hidden" name="RoleId" value="@ViewData["RoleId"]" />
+                                        <input type="hidden" name="TabsList" value="@ViewData["TabsList"]" />
+                                        <button class="btn btn-sm btn-primary" type="submit">保存</button><span>&nbsp;&nbsp;</span>
+                                        <button class="btn btn-sm btn-primary" cancel>关闭</button><span>&nbsp;&nbsp;</span>
+                                    </div>
+                                    <table class="table table-condensed table-hover table-striped fancytree-fade-expander fancytree-container fancytree-ext-table ui-draggable-handle fancytree-ext-edit fancytree-ext-glyph fancytree-colorize-selected table-responsive table-bordered" data-mobile-responsive="true" data-row-style="rowStyle" data-striped="true" data-toggle="table" id="tb_RolePermissions">
+                                        <thead>
+                                            <tr>
+                                                <th style="width:200px !important;">详情页</th>
+                                                <th style="width:300px !important;">页签权限</th>
+                                                <th style="width:450px !important;">页签内按钮权限</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- fancy tree -->
+<script type="text/javascript">
+    glyph_opts = {
+        map: {
+            doc: "glyphicon glyphicon-file",
+            docOpen: "glyphicon glyphicon-file",
+            checkbox: "glyphicon glyphicon-unchecked",
+            checkboxSelected: "glyphicon glyphicon-check",
+            checkboxUnknown: "glyphicon glyphicon-share",
+            dragHelper: "glyphicon glyphicon-play",
+            dropMarker: "glyphicon glyphicon-arrow-right",
+            error: "glyphicon glyphicon-warning-sign",
+            expanderClosed: "glyphicon glyphicon-menu-right",
+            expanderLazy: "glyphicon glyphicon-menu-right",  // glyphicon-plus-sign
+            expanderOpen: "glyphicon glyphicon-menu-down",  // glyphicon-collapse-down
+            folder: "glyphicon glyphicon-folder-close",
+            folderOpen: "glyphicon glyphicon-folder-open",
+            loading: "glyphicon glyphicon-refresh glyphicon-spin"
+        }
+    };
+    $(function () {
+        // Initialize Fancytree
+        $("#tb_RolePermissions").fancytree({
+            extensions: ["dnd", "edit", "glyph", "table"],
+            checkbox: true, //是否带有多选框
+            selectMode: 3,
+            dnd: {
+                focusOnClick: true,
+                dragStart: function (node, data) { return false; },
+                dragEnter: function (node, data) { return false; },
+                dragDrop: function (node, data) { return false; }
+            },
+
+            glyph: glyph_opts,
+            source: eval(@Html.Raw(jsonNew))@*{ url: "@WebHelper.ResolveUrl("~/Scripts/jquery-fancytree/testdata/ajax-sub2.json")", debugDelay: 0 }*@,
+
+            table: {
+                checkboxColumnIdx: 1,
+                nodeColumnIdx: 0
+            },
+
+            renderColumns: function (event, data) {
+                var roleId = $("input[name='RoleId']").val();
+                var node = data.node,
+                $tdList = $(node.tr).find(">td");
+                $.get('@Url.Action("GetTabsButtons")', { key: node.key, roleId: roleId }, function (listItem) {
+                    if (listItem.length != 0) {
+                        for (var i = 0; i < listItem.length; i++) {
+                            if (listItem[i].Selected == true) {
+                                $tdList.eq(2).append("<input style='margin-left:5px;' type='checkbox'id='permisson_" + listItem[i].Value + "' checked ='checked' name='like' value='" + listItem[i].Value + "'><label style='margin-left:5px;' for='permisson_" + listItem[i].Value + "' class='fancytree-title'> " + listItem[i].Text + "</label>");
+                            }
+                            else {
+                                $tdList.eq(2).append("<input style='margin-left:5px;' type='checkbox' id='permisson_" + listItem[i].Value + "' name='like' value='" + listItem[i].Value + "'><label style='margin-left:5px;' for='permisson_" + listItem[i].Value + "' class='fancytree-title'> " + listItem[i].Text + "</label>")
+                            }
+                        }
+                    }
+                });
+            },
+
+            //activate: function (event, data) {
+            //    console.log(data);
+            //},
+
+            lazyLoad: function (event, data) {
+                data.result = eval(@Html.Raw(jsonNew))@*{ url: "@WebHelper.ResolveUrl("~/Scripts/jquery-fancytree/testdata/ajax-sub2.json")", debugDelay: 0 }*@;
+                var selNodes = data.tree.getSelectedNodes();
+                var selKeys = $.map(selNodes, function (node) {
+                    return node.key;
+                });
+                $("input[name='TabsList']").val(selKeys.join(","));
+            },
+
+            //loadChildren: function (event, ctx) {
+            //    ctx.node.fixSelection3AfterClick();
+            //},
+
+            //选中事件
+            select: function (event, data) {
+                var selNodes = data.tree.getSelectedNodes();
+                var selKeys = $.map(selNodes, function (node) {
+                    return node.key;
+                });
+                $("input[name='TabsList']").val(selKeys.join(","));
+            }
+        });
+    });
+</script>

@@ -1,0 +1,47 @@
+﻿@model List<Permission>
+@{
+    ViewBag.Title = "角色权限";
+    int roleId = ViewData.Get<int>("roleIdd", 0);
+    IEnumerable<Permission> permissions = ViewData.Get<IEnumerable<Permission>>("permissions", null);
+    IEnumerable<int> ids = permissions.Select(n => n.Id);
+}
+<div class="ibox-content">
+    @using (Ajax.BeginForm("EditRolePermissions", "Admin", null, new AjaxOptions { OnSuccess = "OnSuccessCallBack" }, new { @class = "form-horizontal" }))
+    {
+        @Html.Hidden("id", roleId);
+        <div class="box-body">
+            <div class="form-group">
+                <div class="col-sm-12">
+                    @foreach (var permission in Model)
+                    {
+                        <label @if (ids.Contains(permission.Id))
+                        { <text> class="checkbox-inline i-checks iCheck-button-check-css" </text> }
+                        else { <text> class="checkbox-inline i-checks iCheck-button-uncheck-css" </text> } style="margin-bottom:20px;">
+                            <input type="checkbox" name="permissionIds" value="@permission.Id" @if (ids.Contains(permission.Id)) { <text> checked="checked" </text>  }>@permission.Name
+                        </label>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="layer-btn">
+            <button type="button" class="btn btn-default btn-sm pull-right" cancel>取消</button>
+            <button type="submit" class="btn btn-primary btn-sm pull-right">提交</button>
+        </div>
+    }
+</div>
+<script type="text/javascript">
+    window.title = "角色权限";
+    $(".i-checks").iCheck({ checkboxClass: "icheckbox_square-green", radioClass: "iradio_square-green", })
+    $(".icheckbox_square-green").each(function () {
+        $(this).hide();
+    });
+
+    $(".i-checks").click(function () {
+        if ($('div', this).attr("class") == "icheckbox_square-green hover checked") {
+            $(this).attr("class", "checkbox-inline i-checks iCheck-button-check-css");
+        }
+        if ($('div', this).attr("class") == "icheckbox_square-green hover") {
+            $(this).attr("class", "checkbox-inline i-checks iCheck-button-uncheck-css");
+        }
+    });
+</script>

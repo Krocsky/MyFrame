@@ -1,0 +1,88 @@
+﻿@model UserCreateModel
+@{
+    ViewBag.Title = "创建用户";
+    object textboxAttribute = new { @class = "form-control" };
+}
+
+<style type="text/css">
+    .role-width {
+        min-width: 100px;
+        width: 100px;
+    }
+</style>
+<div class="ibox-content">
+    @using (Ajax.BeginForm("CreateUser", "Admin", null, new AjaxOptions { OnSuccess = "OnSuccessCallBack" }, new { @class = "form-horizontal" }))
+    {
+        @Html.HiddenFor(n => n.Id)
+        <div class="box-body">
+            <div class="form-group">
+                @Html.LabelFor(n => n.UserName, new { @class = "col-sm-4 control-label" })
+                <div class="col-sm-8">
+                    @Html.TextBoxFor(n => n.UserName, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(n => n.UserName)
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(n => n.LoginAccount, new { @class = "col-sm-4 control-label" })
+                <div class="col-sm-8">
+                    @Html.TextBoxFor(n => n.LoginAccount, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(n => n.LoginAccount)
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(n => n.PasswordModify, new { @class = "col-sm-4 control-label" })
+                <div class="col-sm-8">
+                    @Html.TextBoxFor(n => n.PasswordModify, new { @class = "form-control", AUTOCOMPLETE = "false", onfocus = "this.type='password'" })
+                    @Html.ValidationMessageFor(n => n.PasswordModify)
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(n => n.PhoneNumber, new { @class = "col-sm-4 control-label" })
+                <div class="col-sm-8">
+                    @Html.TextBoxFor(n => n.PhoneNumber, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(n => n.PhoneNumber)
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(n => n.UserType, new { @class = "col-sm-4 control-label" })
+                <div class="col-sm-8">
+                    @Html.DropDownListFor(n => n.UserType, ViewData["UserType"] as SelectList, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(n => n.UserType)
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(n => n.Description, new { @class = "col-sm-4 control-label" })
+                <div class="col-sm-8">
+                    @Html.TextAreaFor(n => n.Description, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(n => n.Description)
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(n => n.Roles, new { @class = "col-sm-4 control-label" })
+                <div class="col-sm-8">
+                    @foreach (var role in Model.Roles)
+                    {
+                        <label class="checkbox-inline i-checks role-width">
+                            <input type="checkbox" name="role" value="@role.Name" checked="checked">@role.Name
+                        </label>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="layer-btn">
+            <button type="button" class="btn btn-default btn-sm pull-right" cancel>取消</button>
+            <button type="submit" class="btn btn-primary btn-sm pull-right">创建</button>
+        </div>
+    }
+</div>
+<script type="text/javascript">
+    window.title = "创建用户";
+    $(".i-checks").iCheck({ checkboxClass: "icheckbox_square-green", radioClass: "iradio_square-green", })
+    $(function () {
+        $("#PasswordModify").val("");
+
+        if ($("#choosenSchoolId").val()) {
+            $("#SchoolAreaId").val($("#choosenSchoolId").val());
+        }
+    });
+</script>

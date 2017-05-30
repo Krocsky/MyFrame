@@ -1,0 +1,26 @@
+﻿@{
+    string searchUrl = Url.Action("TeacherSelector", "Api");
+    string name = ViewData.GetString("name");
+    string defaultValue = ViewData.GetString("defaultValue");
+    int userId = ViewData.GetInt("userId");
+    var teacherType = ViewData.GetInt("teacherType");
+    //加入教师类型：1==> 中教；2==>外教；3==>助教
+    if (teacherType > 0)
+    {
+        searchUrl = searchUrl + "?teacherType=" + teacherType;
+    }
+    else
+    {
+        searchUrl = searchUrl + "?teacherType=0";
+    }
+}
+<div class="input-group">
+    <input type="text" class="form-control teacherSelector" data-contorlId="@name" data-url="@searchUrl" value="@defaultValue" data-userId="@userId" data-teacherType="@(teacherType)" />
+    @Html.Hidden(name, userId.ToString())
+    <div class="input-group-btn" style="width:0px;">
+        <button type="button" class="btn btn-white dropdown-toggle" data-toggle="dropdown">
+            <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-right" role="menu" style="max-height:180px;"></ul>
+    </div>
+</div>

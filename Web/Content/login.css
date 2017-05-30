@@ -1,0 +1,102 @@
+﻿@font-face {
+    font-family: Open Sans Light;
+    src: url(../fonts/OpenSans-Light.ttf);
+}
+
+.account {
+    background: #EEEFF0 url(img/footer.png) no-repeat;
+    background-size: 100%;
+    background-position-y: bottom;
+    font-family: Open Sans Light !important;
+    font-size: 16px !important;
+}
+
+.account-m {
+    background: #EEEFF0 url(img/footer-m.png) no-repeat;
+    background-size: 100%;
+    background-position-y: bottom;
+    font-family: Open Sans Light !important;
+    font-size: 16px !important;
+}
+
+.account label {
+    color: #000000 !important;
+    font-weight: 400 !important;
+}
+
+@media only screen and (min-device-width : 768px) and (max-device-width : 1024px) {
+    .account-m {
+        background-color: #EEEFF0;
+        background: url(img/footer.png) no-repeat;
+        background-size: 100%;
+        background-position-y: bottom;
+    }
+
+    .login-div-m {
+        width: 35% !important;
+    }
+}
+
+@media only screen and (min-device-width : 768px) and (max-device-width : 1024px) and (orientation : portrait) {
+    .login-div-m {
+        width: 60% !important;
+    }
+}
+
+.login-div {
+    width: 20%;
+    z-index: 100;
+    margin: 0 auto;
+}
+
+.login-div-m {
+    width: 75%;
+    z-index: 100;
+    margin: 0 auto;
+}
+
+.login-logo {
+    padding-top: 13%;
+}
+
+.login-form {
+    text-align: left;
+    background-color: #FFFFFF;
+    -moz-box-shadow: 3px 3px 3px #b1b1af;
+    -webkit-box-shadow: 3px 3px 3px #b1b1af;
+    box-shadow: 3px 3px 3px #b1b1af;
+    border-radius: 10px;
+    margin-top: 3%;
+}
+
+    .login-form .login-title {
+        margin-left: 13px;
+    }
+
+    .login-form form {
+        padding: 7% 14%;
+    }
+
+        .login-form form input {
+            border-radius: 15px;
+            border: 3px solid #e5e6e7;
+        }
+
+        .login-form form .login-button {
+            padding: 5px 11%;
+            border-radius: 15px !important;
+            background-color: #F9A13E !important;
+            border-color: #F9A13E !important;
+        }
+
+            .login-form form .login-button:focus {
+                outline: 0;
+            }
+
+.login-version {
+    margin-top: 22.5px;
+}
+
+.login-label{
+    font-size:14px;
+}

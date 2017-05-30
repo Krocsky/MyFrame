@@ -1,0 +1,84 @@
+﻿@model IList<Navigation>
+@{
+    User user = UserContext.CurrentUser;
+}
+<nav class="navbar-default navbar-static-side" role="navigation">
+    <div class="nav-close">
+        <i class="fa fa-times-circle"></i>
+    </div>
+    <div class="sidebar-collapse">
+        <ul class="nav" id="side-menu">
+            <li class="nav-header">
+                <!-- Avatar -->
+                <div class="nav-logo img-circle img-responsive animated bounce">
+
+                </div>
+            </li>
+            <li class="nav-name">
+                <div class="dropdown profile-element">
+                    <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+                        <span class="clear">
+                            <span class="block m-t-xs"><strong class="font-bold">@user.TrueName</strong></span>
+                        </span>
+                    </a>
+                    <ul class="dropdown-menu animated fadeInRight m-t-xs">
+                        <li>
+                            <a class="J_menuItem" href="@Url.Action("PersonalInfo", "Account")" data-index="0">个人资料</a>
+                        </li>
+                        <li>
+                            <a class="J_menuItem" href="@Url.Action("ChangePassword", "Account")" data-index="1">修改密码</a>
+                        </li>
+                        <li class="divider"></li>
+                        <li>
+                            <a href="@Url.LogOut()">安全退出</a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+            @if (Model != null)
+            {
+                foreach (var navigation in Model)
+                {
+                    bool hasChildren = navigation.Children.Count > 0;
+
+                    if (!hasChildren && string.IsNullOrEmpty(navigation.RouteName) && string.IsNullOrEmpty(navigation.Url))
+                    {
+                        continue;
+                    }
+                    <li>
+                        <a @if (!hasChildren) { <text> class="J_menuItem" </text>                 } href="@navigation.GetUrl()">
+                            <i class="@navigation.IconName" style="width:22px; text-align:center"></i>
+                            <span class="nav-label">@navigation.Name</span>
+                            @if (navigation.Children.Count > 0)
+                            {
+                                <span class="fa arrow"></span>
+                            }
+                        </a>
+                        @if (hasChildren)
+                        {
+                            <ul class="nav nav-second-level">
+                                @foreach (var nav in navigation.Children.OrderBy(n => n.DisplayOrder))
+                                {
+                                    if (user.UserName != "admin")
+                                    {
+                                        if (!user.HasPermission(nav.PermissionName))
+                                        {
+                                            continue;
+                                        }
+                                        if (nav.IsEnabled == false)
+                                        {
+                                            continue;
+                                        }
+                                    }
+                                    <li>
+                                        <a class="J_menuItem" href="@nav.GetUrl()"><i class="@nav.IconName" style="width:22px;"></i> @nav.Name</a>
+                                    </li>
+                                }
+                            </ul>
+                        }
+                    </li>
+                }
+            }
+        </ul>
+    </div>
+</nav>

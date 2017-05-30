@@ -1,0 +1,37 @@
+﻿@{
+    ViewBag.Title = "ManageNavigation";
+    Layout = "~/Views/Shared/_Iframe.cshtml";
+}
+<section class="content">
+    <div class="row manageuser">
+        <div class="col-xs-12">
+            <div class="box">
+                <div class="box-header">
+                    <button class="btn btn-sm btn-primary pull-left" type="button" id="importArea">导入奥</button><label class="pull-left">&nbsp;&nbsp;&nbsp;</label>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+@section scripts{
+    <script type="text/javascript" src="~/Scripts/areaData.js"></script>
+    <script type="text/javascript">
+        function OnSuccessCallBack(data) {
+            layer.closeAll("page");
+            layer.msg(data.Message, { icon: data.Status, time: 1500 }, function () {
+                if (data.Status == 1) {
+                    window.location.reload();
+                }
+            });
+        }
+
+        $(document).on("click", "#importArea", function (e) {
+            e.preventDefault();
+            var jsonStr = JSON.stringify(allAreaData);
+
+            $.post("/Admin/InputArea", { jsonStr: jsonStr }, function (data) {
+                console.log(data);
+            });
+        });
+    </script>
+}

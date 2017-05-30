@@ -1,0 +1,28 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <link rel="shortcut icon" href="~/favicon.ico" />
+    <link rel="bookmark" href="~/favicon.ico" />
+    <title>@ViewBag.Title</title>
+    <!--[if lt IE 9]>
+        <script src="~/Scripts/html5shiv.min.js"></script>
+        <script src="~/Scripts/respond.min.js"></script>
+    <![endif]-->
+    @Styles.Render("~/Content/bootstrap")
+</head>
+<body class="nav-fixed home">
+    @Html.Action("_Header", "Home")
+    <div id="zan-bodyer">
+        <div class="container">
+            @RenderBody()
+        </div>
+    </div>
+    @Html.Action("_Footer", "Blog")
+    <div id="zan-gotop" style="bottom: 20px;">
+        <i class="fa fa-angle-up"></i>
+    </div>
+</body>
+</html>

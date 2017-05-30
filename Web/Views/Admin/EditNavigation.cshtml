@@ -1,0 +1,76 @@
+﻿@model NavigationEditModel
+@{
+    string title = Model.Id > 0 ? "编辑菜单" : "添加菜单";
+}
+<div class="ibox-content">
+    @using (Ajax.BeginForm("EditNavigation", "Admin", null, new AjaxOptions { OnSuccess = "OnSuccessCallBack" }, new { @class = "form-horizontal" }))
+    {
+
+        <div class="box-body">
+            @Html.HiddenFor(n => n.Id)
+            <div class="form-group">
+                @Html.LabelFor(n => n.Name, new { @class = "col-sm-4 control-label" })
+                <div class="col-sm-8">
+                    @Html.TextBoxFor(n => n.Name, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(n => n.Name)
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(n => n.ParentId, new { @class = "col-sm-4 control-label" })
+                <div class="col-sm-8">
+                    @Html.DropDownListFor(n => n.ParentId, ViewData["parentList"] as SelectList, "无父级导航", new { @class = "form-control" })
+                    @Html.ValidationMessageFor(n => n.ParentId)
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(n => n.RouteName, new { @class = "col-sm-4 control-label" })
+                <div class="col-sm-8">
+                    @Html.TextBoxFor(n => n.RouteName, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(n => n.RouteName)
+                </div>
+            </div>
+            @*<div class="form-group">
+                @Html.LabelFor(n => n.Url, new { @class = "col-sm-4 control-label" })
+                <div class="col-sm-8">
+                    @Html.TextBoxFor(n => n.Url, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(n => n.Url)
+                </div>
+            </div>*@
+            <div class="form-group">
+                @Html.LabelFor(n => n.PermissionName, new { @class = "col-sm-4 control-label"})
+                <div class="col-sm-8">
+                    @Html.TextBoxFor(n => n.PermissionName, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(n => n.PermissionName)
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(n => n.IconName, new { @class = "col-sm-4 control-label" })
+                <div class="col-sm-8">
+                    @Html.TextBoxFor(n => n.IconName, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(n => n.IconName)
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(n => n.DisplayOrder, new { @class = "col-sm-4 control-label" })
+                <div class="col-sm-8">
+                    @Html.TextBoxFor(n => n.DisplayOrder, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(n => n.DisplayOrder)
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(n => n.IsEnabled, new { @class = "col-sm-4 control-label" })
+                <div class="col-sm-8">
+                    @Html.DropDownListFor(n => n.IsEnabled, ViewData["isEnabledList"] as SelectList, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(n => n.IsEnabled)
+                </div>
+            </div>
+        </div>
+        <div class="layer-btn">
+            <button type="button" class="btn btn-default btn-sm pull-right" cancel>取消</button>
+            <button type="submit" class="btn btn-primary btn-sm pull-right">提交</button>
+        </div>
+    }
+</div>
+<script type="text/javascript">
+    window.title = "@title";
+</script>

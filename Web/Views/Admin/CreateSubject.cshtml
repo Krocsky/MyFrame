@@ -1,0 +1,105 @@
+﻿@model SubjectModel
+@{
+    ViewBag.Title = "新增课时";
+    object textboxAttribute = new { @class = "form-control" };
+}
+
+<div class="ibox-content">
+    @using (Ajax.BeginForm("CreateSubject", "Admin", null, new AjaxOptions { OnSuccess = "OnSuccessCallBack" }, new { @class = "form-horizontal" }))
+    {
+        @Html.HiddenFor(n => n.Id)
+        <div class="box-body">
+            <div class="form-group">
+                @Html.LabelFor(n => n.Code, new { @class = "col-sm-4 control-label" })
+                <div class="col-sm-8">
+                    @Html.TextBoxFor(n => n.Code, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(n => n.Code)
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(n => n.SubjectHour, new { @class = "col-sm-4 control-label" })
+                <div class="col-sm-8">
+                    @Html.TextBoxFor(n => n.SubjectHour, new { @class = "form-control", onkeyup = "onlyNonNegative(this)", value = "" })
+                    @Html.ValidationMessageFor(n => n.SubjectHour)
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(n => n.SubjectType, new { @class = "col-sm-4 control-label" })
+                <div class="col-sm-8">
+                    <div class="col-sm-6">
+                        <div class="checkbox-inline i-checks">
+                            <label>
+                                @Html.RadioButtonFor(n => n.SubjectType, 1)&nbsp;幼儿&nbsp;
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="checkbox-inline i-checks">
+                            <label>
+                                @Html.RadioButtonFor(n => n.SubjectType, 2)&nbsp;少儿&nbsp;
+                            </label>
+                        </div>
+                    </div>
+                    @Html.ValidationMessageFor(n => n.SubjectType)
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(n => n.subjectStartTime, new { @class = "col-sm-4 control-label" })
+                <div class="col-sm-8">
+                    @Html.HiddenFor(n => n.subjectStartTime, new { id = "subjectStartTime" })
+
+                    <div class="input-group clockpicker clockpickerStart">
+                        <input type="text" class="form-control" value="" readonly="readonly">
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-time"></span>
+                        </span>
+                    </div>
+                    <script type="text/javascript">
+                        $('.clockpickerStart').clockpicker({
+                            placement: 'top',
+                            align: 'left',
+                            donetext: '确定'
+                        }).find('input').change(function () {
+                            // TO Do
+                            $("#subjectStartTime").val(this.value);
+                        });
+                    </script>
+                </div>
+                @Html.ValidationMessageFor(n => n.subjectEndTime)
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(n => n.subjectEndTime, new { @class = "col-sm-4 control-label" })
+                <div class="col-sm-8">
+                    @Html.HiddenFor(n => n.subjectEndTime, new { id = "subjectEndTime" })
+                    <div class="input-group clockpicker clockpickerEnd">
+                        <input type="text" class="form-control" readonly="readonly">
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-time"></span>
+                        </span>
+                    </div>
+                    <script type="text/javascript">
+                        $('.clockpickerEnd').clockpicker({
+                            placement: 'top',
+                            align: 'left',
+                            donetext: '确定'
+                        }).find('input').change(function () {
+                            // TO Do
+                            $("#subjectEndTime").val(this.value);
+                        });
+                    </script>
+                    @Html.ValidationMessageFor(n => n.subjectEndTime)
+                </div>
+            </div>
+        </div>
+        <div class="layer-btn">
+            <center>
+                <button type="submit" class="btn btn-primary btn-sm ">保存</button>
+                <button type="button" class="btn btn-default btn-sm " cancel>取消</button> 
+            </center>
+        </div>
+    }
+</div>
+<script type="text/javascript">
+    window.title = "创建课时";
+    $(".i-checks").iCheck({ checkboxClass: "icheckbox_square-green", radioClass: "iradio_square-green", })
+</script>

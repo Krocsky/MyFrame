@@ -1,0 +1,52 @@
+﻿@model RoleEditModel
+@{
+    object htmlAttributes = new { @class = "form-control" };
+    if (Model.Id > 0)
+    {
+        htmlAttributes = new { @class = "form-control", @readonly = "true" };
+    }
+    string title = Model.Id > 0 ? "编辑角色" : "添加角色";
+}
+<div class="ibox-content">
+    @using (Ajax.BeginForm("EditRole", "Admin", null, new AjaxOptions { OnSuccess = "OnSuccessCallBack" }, new { @class = "form-horizontal" }))
+    {
+        @Html.HiddenFor(n => n.Id)
+        <div class="box-body">
+            <div class="form-group">
+                @Html.LabelFor(n => n.Name, new { @class = "col-sm-4 control-label" })
+                <div class="col-sm-8">
+                    @Html.TextBoxFor(n => n.Name, htmlAttributes)
+                    @Html.ValidationMessageFor(n => n.Name)
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(n => n.Type, new { @class = "col-sm-4 control-label" })
+                <div class="col-sm-8">
+                    @Html.DropDownList("type", ViewData["roleType"] as List<SelectListItem>, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(n => n.Type)
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(n => n.DisplayOrder, new { @class = "col-sm-4 control-label" })
+                <div class="col-sm-8">
+                    @Html.TextBoxFor(n => n.DisplayOrder, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(n => n.DisplayOrder)
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(n => n.Description, new { @class = "col-sm-4 control-label" })
+                <div class="col-sm-8">
+                    @Html.TextBoxFor(n => n.Description, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(n => n.Description)
+                </div>
+            </div>
+        </div>
+        <div class="layer-btn">
+            <button type="button" class="btn btn-default btn-sm pull-right" cancel>取消</button>
+            <button type="submit" class="btn btn-primary btn-sm pull-right">提交</button>
+        </div>
+    }
+</div>
+<script type="text/javascript">
+    window.title = "@title";
+</script>

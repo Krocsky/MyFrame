@@ -1,0 +1,114 @@
+﻿@model LoginEditModel
+@{
+    Layout = "~/Views/Shared/_Account.cshtml";
+    ViewBag.Title = "校长注册";
+}
+<div class="row">
+    <div class="col-sm-12 text-center">
+        <a href="@Url.Home()"><h1><strong>思酷云-校长注册</strong></h1></a>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-12 form-box">
+        <div>
+            <!-- Nav tabs -->
+            <div class="res-panel">
+                <div class="step-panel">
+                    <div class="nav-container">
+                        <ol class="ui-step ui-step-3 cl">
+                            <li class="ui-step-item active">
+                                <div class="ui-step-line"></div>
+                                <div class="ui-step-icon">
+                                    <div></div>
+                                    <span>手机验证</span>
+                                </div>
+                            </li>
+                            <li class="ui-step-item current">
+                                <div class="ui-step-line"></div>
+                                <div class="ui-step-icon">
+                                    <div></div>
+                                    <span>个人信息</span>
+                                </div>
+                            </li>
+                            <li class="ui-step-item">
+                                <div class="ui-step-icon">
+                                    <div></div>
+                                    <span>一键建校</span>
+                                </div>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+            <!-- Tab panes -->
+            <div class="tab-content">
+                <div role="tabpanel" class="tab-pane fade in active" id="info">
+                    @using (Html.BeginForm("SchoolRegister", "Account", FormMethod.Post, new { @class = "form-horizontal m-t", role = "form" }))
+                    {
+                        @Html.HiddenFor(n => n.Phone)
+                        @Html.HiddenFor(n => n.Password)
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label form-label">登陆账号：<span style="color:red;">*</span></label>
+                            <div class="col-sm-8">
+                                <span class="fa fa-user form-control-feedback form-feedback"></span>
+                                @Html.TextBoxFor(n => n.UserName, new { placeholder = "请输入登陆账号", @class = "form-control form-input" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label form-label">学校名称：<span style="color:red;">*</span></label>
+                            <div class="col-sm-8">
+                                <span class="fa fa-graduation-cap form-control-feedback form-feedback"></span>
+                                @Html.TextBoxFor(n => n.School, new { placeholder = "请输入学校名称", @class = "form-control form-input" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label form-label">校长名称：<span style="color:red;">*</span></label>
+                            <div class="col-sm-8">
+                                <span class="fa fa-user-secret form-control-feedback form-feedback"></span>
+                                @Html.TextBoxFor(n => n.TrueName, new { placeholder = "请输入校长名称", @class = "form-control form-input" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-8 col-sm-offset-3 form-button">
+                                <button type="submit" class="btn btn-primary btn-lg btn-login">注册</button>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        //$.backstretch("@WebHelper.ResolveUrl("~/Content/img/login.jpg")");
+        if (navigator.userAgent.toLowerCase().indexOf("chrome") >= 0) {
+            $(window).load(function () {
+                $('input:-webkit-autofill').each(function () {
+                    var name = $(this).attr('name');
+                    $(this).after(this.outerHTML).remove();
+                    $('input[name=' + name + ']').val('');
+                });
+            });
+        }
+
+        $(".form-horizontal").validate({
+            ignore: "",
+            rules: {
+                "UserName": "required",
+                "TrueName": "required",
+                "School": "required"
+            },
+            messages: {
+                "UserName": "请输入登陆账号！",
+                "TrueName": "请输入学校名称！",
+                "School": "请输入校长名称！"
+            },
+            submitHandler: function (form) {
+                form.submit();
+            }
+        });
+
+    });
+</script>

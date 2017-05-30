@@ -1,0 +1,101 @@
+﻿@{
+    Layout = null;
+}
+<div class="ibox-content">
+    @using (Ajax.BeginForm("BatchSetHolidays", "Admin", null, new AjaxOptions { OnSuccess = "OnBatchSetSuccess" }, new { @class = "form-horizontal", enctype = "multipart/form-data", id = "batchForm" }))
+    {
+        <div class="box-body">
+            <div class="form-group">
+                <div class="col-sm-3">
+                    <label class="control-label">年限</label>
+                </div>
+                <div class="col-sm-9">
+                    <div class="input-group">
+                        @Html.TextBox("startYear", DateTime.Now.Year, new { @class = "form-control" })
+                        <span class="input-group-addon">至</span>
+                        @Html.TextBox("endYear", DateTime.Now.Year, new { @class = "form-control" })
+                    </div>
+
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-3">
+                    <label class="control-label">休息日</label>
+                </div>
+                <div class="col-sm-9">
+                    <div class="checkbox-inline i-checks">
+                        <label class="">
+                            <input type="checkbox" name="dayOfWeek" value="1"> <i></i> 星期一
+                        </label>
+                    </div>
+                    <div class="checkbox-inline i-checks">
+                        <label class="">
+                            <input type="checkbox" name="dayOfWeek" value="2"> <i></i> 星期二
+                        </label>
+                    </div>
+                    <div class="checkbox-inline i-checks">
+                        <label class="">
+                            <input type="checkbox" name="dayOfWeek" value="3"> <i></i> 星期三
+                        </label>
+                    </div>
+                    <div class="checkbox-inline i-checks">
+                        <label class="">
+                            <input type="checkbox" name="dayOfWeek" value="4"> <i></i> 星期四
+                        </label>
+                    </div>
+                    <div class="checkbox-inline i-checks">
+                        <label class="">
+                            <input type="checkbox" name="dayOfWeek" value="5"> <i></i> 星期五
+                        </label>
+                    </div>
+                    <div class="checkbox-inline i-checks">
+                        <label class="">
+                            <input type="checkbox" name="dayOfWeek" value="6"> <i></i> 星期六
+                        </label>
+                    </div>
+                    <div class="checkbox-inline i-checks">
+                        <label class="">
+                            <input type="checkbox" name="dayOfWeek" value="0"> <i></i> 星期日
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layer-btn">
+            <center>
+                <button type="submit" class="btn btn-primary btn-sm" id="batchSubmit">保存</button>
+                <button type="button" class="btn btn-default btn-sm" cancel>关闭</button>
+            </center>
+        </div>
+    }
+</div>
+<script type="text/javascript">
+    window.title = "批量设置节假日";
+    $(".i-checks").iCheck({ checkboxClass: "icheckbox_square-green", radioClass: "iradio_square-green", })
+
+    var loading;
+    $("#batchSubmit").click(function (e) {
+        e.preventDefault();
+        if ($("#batchForm").valid()) {
+            loading = layer.load(0, { shade: false });
+            $(this).submit();
+        }
+    });
+
+    function OnBatchSetSuccess(data) {
+        layer.closeAll("page");
+        layer.msg(data.Message, { icon: data.Status, time: 1500 }, function () {
+            if (data.Status == 1) {
+                window.location.reload();
+            }
+        });
+    }
+
+    $("#startYear,#endYear").datepicker({
+        format: "yyyy",
+        language: "zh-CN",
+        autoclose: true,
+        todayHighlight: true,
+        minViewMode:"years"
+    });
+</script>
